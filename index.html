@@ -1,1 +1,457 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHY 101 CBT - 15 Questions</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #172033;
+  line-height: 1.6;
+}
+
+header {
+  background: #10264d;
+  color: white;
+  padding: 25px 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 15px;
+}
+
+.status, .question, #results {
+  background: white;
+  padding: 18px;
+  margin: 15px 0;
+  border-radius: 12px;
+  border: 1px solid #dce2ea;
+}
+
+.status {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#timer {
+  color: #b42318;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.option {
+  display: block;
+  border: 1px solid #dce2ea;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: #eff6ff;
+}
+
+.option input {
+  margin-right: 9px;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 13px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px 5px 5px 0;
+}
+
+#submitBtn {
+  background: #185adb;
+  color: white;
+}
+
+#restartBtn {
+  background: #e2e8f0;
+  color: #172033;
+}
+
+.explanation {
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.correct {
+  color: #15803d;
+  font-weight: bold;
+}
+
+.incorrect {
+  color: #b42318;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
+
+#progress {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#bar {
+  width: 0%;
+  height: 100%;
+  background: #185adb;
+}
+
+@media print {
+  #submitBtn, #restartBtn, .status {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>PHY 101 CBT Examination</h1>
+  <p>Mechanics: Space, Time and Motion</p>
+  <p>15 Questions | 5 Minutes</p>
+</header>
+
+<main>
+
+<div class="status">
+  <div>
+    <strong>Time remaining:</strong>
+    <span id="timer">05:00</span>
+  </div>
+
+  <div>
+    <strong>Answered:</strong>
+    <span id="answered">0 / 15</span>
+  </div>
+
+  <div id="progress">
+    <div id="bar"></div>
+  </div>
+</div>
+
+<p>
+  Choose one option for each question. Your score and explanations
+  will appear only after you submit or the timer expires.
+</p>
+
+<form id="quiz">
+  <div id="questions"></div>
+
+  <button type="submit" id="submitBtn">
+    Submit All Answers
+  </button>
+</form>
+
+<div id="results" class="hidden"></div>
+
+<button id="restartBtn" class="hidden" onclick="location.reload()">
+  Restart Test
+</button>
+
+</main>
+
+<script>
+const questions = [
+{
+q: "Which statement best describes a reference frame?",
+o: [
+"A unit used to measure mass",
+"A coordinate system used to describe position and motion",
+"A device used to measure temperature",
+"A type of vector"
+],
+a: 1,
+e: "A reference frame provides a coordinate system relative to which position and motion are described."
+},
+{
+q: "Which of the following is an SI fundamental unit?",
+o: ["Newton", "Joule", "Kilogram", "Watt"],
+a: 2,
+e: "The kilogram is an SI base unit for mass. Newton, joule and watt are derived units."
+},
+{
+q: "The dimensional formula for velocity is:",
+o: ["[LT⁻¹]", "[LT⁻²]", "[MLT⁻¹]", "[L²T⁻¹]"],
+a: 0,
+e: "Velocity = displacement / time, so its dimension is length divided by time: [LT⁻¹]."
+},
+{
+q: "The dimensional formula for acceleration is:",
+o: ["[LT⁻¹]", "[LT⁻²]", "[MLT⁻²]", "[T⁻¹]"],
+a: 1,
+e: "Acceleration is the change in velocity per unit time. Its dimension is [LT⁻²]."
+},
+{
+q: "Which of these quantities is a scalar?",
+o: ["Displacement", "Acceleration", "Velocity", "Distance"],
+a: 3,
+e: "Distance has magnitude only. Displacement, acceleration and velocity have both magnitude and direction."
+},
+{
+q: "Two perpendicular vector components are 3 m and 4 m. What is the magnitude of their resultant?",
+o: ["1 m", "5 m", "7 m", "12 m"],
+a: 1,
+e: "R = √(3² + 4²) = √25 = 5 m."
+},
+{
+q: "A vector A has components Ax = 6 and Ay = 8. What is its magnitude?",
+o: ["2", "10", "14", "48"],
+a: 1,
+e: "|A| = √(Ax² + Ay²) = √(36 + 64) = 10."
+},
+{
+q: "Which expression represents a unit vector?",
+o: ["A vector with zero magnitude",
+"A vector with magnitude one",
+"A vector with no direction",
+"A vector whose magnitude is always ten"],
+a: 1,
+e: "A unit vector has magnitude one and indicates a direction."
+},
+{
+q: "For vectors A and B, the cross product A × B is generally:",
+o: ["A scalar", "A vector", "Always zero", "Always positive"],
+a: 1,
+e: "The cross product produces a vector perpendicular to both A and B, with direction given by the right-hand rule."
+},
+{
+q: "If A × B = C, what is B × A?",
+o: ["C", "−C", "2C", "Zero in every case"],
+a: 1,
+e: "The cross product is anti-commutative: B × A = −(A × B)."
+},
+{
+q: "What is the value of i × j?",
+o: ["i", "j", "k", "−k"],
+a: 2,
+e: "For the standard right-handed unit vectors, i × j = k."
+},
+{
+q: "The position of a particle is x = 4t². What is its velocity?",
+o: ["4t", "8t", "8t²", "4t²"],
+a: 1,
+e: "Velocity is dx/dt. Differentiating x = 4t² gives v = 8t."
+},
+{
+q: "A particle has position x = 3t³. Its acceleration is:",
+o: ["9t", "18t", "18t²", "3t²"],
+a: 1,
+e: "First differentiate: v = 9t². Differentiate again: a = 18t."
+},
+{
+q: "Average velocity is defined as:",
+o: [
+"Total distance divided by total time in every case",
+"Change in displacement divided by elapsed time",
+"Change in acceleration divided by time",
+"Final speed multiplied by time"
+],
+a: 1,
+e: "Average velocity equals displacement divided by the time interval."
+},
+{
+q: "The position vector of a particle is r(t) = 2t³i + t²j. What is its acceleration vector?",
+o: [
+"6t²i + 2tj",
+"12ti + 2j",
+"2ti + 2j",
+"12t²i + 2tj"
+],
+a: 1,
+e: "Differentiate once: v = 6t²i + 2tj. Differentiate again: a = 12ti + 2j."
+}
+];
+
+const form = document.getElementById("quiz");
+const questionsBox = document.getElementById("questions");
+const timerDisplay = document.getElementById("timer");
+const answeredDisplay = document.getElementById("answered");
+const progressBar = document.getElementById("bar");
+const results = document.getElementById("results");
+const submitBtn = document.getElementById("submitBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+let seconds = 300;
+let ended = false;
+let clock;
+
+function renderQuestions() {
+  questions.forEach((question, index) => {
+    const div = document.createElement("section");
+    div.className = "question";
+    div.id = "question-" + index;
+
+    let html = `<p><strong>Question ${index + 1} of 15:</strong>
+      ${question.q}</p>`;
+
+    question.o.forEach((option, optionIndex) => {
+      html += `
+        <label class="option">
+          <input type="radio"
+            name="q${index}"
+            value="${optionIndex}">
+          ${String.fromCharCode(65 + optionIndex)}. ${option}
+        </label>`;
+    });
+
+    html += `<div class="explanation hidden"
+      id="explanation-${index}"></div>`;
+
+    div.innerHTML = html;
+    questionsBox.appendChild(div);
+  });
+}
+
+function updateAnswered() {
+  const count = questions.filter((q, index) =>
+    document.querySelector(`input[name="q${index}"]:checked`)
+  ).length;
+
+  answeredDisplay.textContent = `${count} / 15`;
+  progressBar.style.width = `${count / 15 * 100}%`;
+}
+
+questionsBox.addEventListener("change", updateAnswered);
+
+function showTime() {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  timerDisplay.textContent =
+    String(minutes).padStart(2, "0") + ":" +
+    String(remainingSeconds).padStart(2, "0");
+
+  if (seconds <= 0) {
+    submitTest(true);
+    return;
+  }
+
+  seconds--;
+}
+
+function submitTest(timeExpired = false) {
+  if (ended) return;
+  ended = true;
+
+  clearInterval(clock);
+
+  let score = 0;
+  let unanswered = 0;
+  let review = "";
+
+  questions.forEach((question, index) => {
+    const selected = document.querySelector(
+      `input[name="q${index}"]:checked`
+    );
+
+    const explanation = document.getElementById(
+      `explanation-${index}`
+    );
+
+    const chosen = selected ? Number(selected.value) : -1;
+    const isCorrect = chosen === question.a;
+
+    if (!selected) unanswered++;
+    if (isCorrect) score++;
+
+    explanation.classList.remove("hidden");
+
+    explanation.innerHTML = `
+      <p class="${isCorrect ? "correct" : "incorrect"}">
+        ${isCorrect ? "Correct!" : "Incorrect."}
+      </p>
+      <p><strong>Correct answer:</strong>
+        ${String.fromCharCode(65 + question.a)}.
+        ${question.o[question.a]}
+      </p>
+      <p><strong>Explanation:</strong> ${question.e}</p>
+    `;
+
+    review += `
+      <p>Question ${index + 1}: ${
+        isCorrect ? "Correct" : "Incorrect"
+      }</p>`;
+  });
+
+  const percentage = Math.round(score / 15 * 100);
+
+  results.classList.remove("hidden");
+  results.innerHTML = `
+    <h2>Examination Result</h2>
+    <h3>Score: ${score} / 15 (${percentage}%)</h3>
+    <p>Correct answers: ${score}</p>
+    <p>Incorrect or unanswered: ${15 - score}</p>
+    <p>Unanswered questions: ${unanswered}</p>
+    <p>${timeExpired
+      ? "Time is up. Your test was submitted automatically."
+      : "You submitted your test successfully."}</p>
+    <hr>
+    <h3>Answer Review</h3>
+    ${review}
+    <button onclick="window.print()">Print / Save Result as PDF</button>
+  `;
+
+  submitBtn.disabled = true;
+
+  document.querySelectorAll("input[type=radio]").forEach(input => {
+    input.disabled = true;
+  });
+
+  restartBtn.classList.remove("hidden");
+  results.scrollIntoView({ behavior: "smooth" });
+}
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+  submitTest(false);
+});
+
+renderQuestions();
+showTime();
+clock = setInterval(showTime, 1000);
+</script>
+
+</body>
+</html>
+
